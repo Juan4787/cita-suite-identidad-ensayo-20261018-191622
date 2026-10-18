@@ -1,0 +1,21 @@
+name: Identity rehearsal
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  identity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: Check exact source and repository
+        env:
+          EXPECTED_REPOSITORY: ${{ github.repository }}
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          python3 - <<'PYTHON'
+          import json, os, re
+          assert os.environ['EXPECTED_REPOSITORY'].startswith('Juan4787/cita-suite-identidad-ensayo-')
+          assert re.fullmatch('[0-9a-f]{40}', os.environ['EXPECTED_SHA'])
+          print(json.dumps({'repository': os.environ['EXPECTED_REPOSITORY'], 'sha': os.environ['EXPECTED_SHA'], 'proof': 'identity metadata only; no deployment'}))
+          PYTHON
